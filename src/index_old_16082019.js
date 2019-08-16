@@ -104,31 +104,13 @@ function filterPage() {
         max = document.getElementById('max');
     const search = document.querySelector('.search-wrapper_input'),
         searchBtn = document.querySelector('.search-btn');
-    const catalogBtn =  document.querySelector('.catalog-button'),
-        catalogWrapper =  document.querySelector('.catalog');
-    let currentCat;
-    
+
     discountCheckBox.addEventListener('click', filter);
     min.addEventListener('change', filter); 
     max.addEventListener('change', filter);
     searchBtn.addEventListener('click', filter);
 
-    catalogBtn.addEventListener('click', (event) => {
-        if(catalogWrapper.style.display){
-            catalogWrapper.style.display = '';
-        } else {
-            catalogWrapper.style.display = 'block';
-        }
-        
-        if (event.target.tagName === 'LI'){
-            currentCat = event.target.textContent;
-            filter(event);
-        } 
-    });
-
-
-
-    function filter() {
+    function filter(event) {
         const searchText = new RegExp(search.value.trim(), 'i');
 
         cards.forEach((card) => {
@@ -137,8 +119,7 @@ function filterPage() {
             const price = parseFloat(cardPrice.textContent);       
             
             if (!searchText.test(title.textContent) || (min.value && price < min.value) || 
-                (max.value && price > max.value) || (discountCheckBox.checked && !card.querySelector('.card-sale')) ||
-                (card.dataset.category !== currentCat && "Все товары" !== currentCat)) 
+                (max.value && price > max.value) || (discountCheckBox.checked && !card.querySelector('.card-sale'))) 
             {
                 card.parentNode.style.display = 'none';
             } else {
@@ -210,17 +191,36 @@ function renderCards(data){
 function renderCatslog(){
     const cards = document.querySelectorAll('.goods .card');
     const catalogList = document.querySelector('.catalog-list');
+    const catalogBtn =  document.querySelector('.catalog-button');
+    const catalogWrapper =  document.querySelector('.catalog');
     const categories = new Set();
     cards.forEach((card) => {
         categories.add(card.dataset.category);
     });
-    categories.add('Все товары');
-
     categories.forEach((item) => {
         const li = document.createElement('li');
         li.textContent = item;
         catalogList.appendChild(li);
     });
+
+    catalogBtn.addEventListener('click', (event) => {
+        if(catalogWrapper.style.display){
+            catalogWrapper.style.display = '';
+        } else {
+            catalogWrapper.style.display = 'block';
+        }
+        
+        if (event.target.tagName === 'LI'){
+            cards.forEach((card) => {
+                if (card.dataset.category === event.target.textContent){
+                    card.parentNode.style.display = '';
+                } else {
+                    card.parentNode.style.display = 'none';
+                }
+            });
+        } 
+    });
+
 }
 
 getData().then((data) => {
