@@ -201,7 +201,7 @@ function renderCards(data){
         //console.log(good);
     });
 
-    addCart();
+    //addCart();
 
     //console.log(data);
 }
